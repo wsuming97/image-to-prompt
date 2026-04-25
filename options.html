@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ImageToPrompt 设置</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f7f9fa; margin: 0; padding: 40px; color: #333; }
+    .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    h1 { font-size: 24px; margin-bottom: 24px; font-weight: 600; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+    input[type="text"], input[type="password"], textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; box-sizing: border-box; transition: border 0.3s; }
+    input:focus, textarea:focus { border-color: #007bff; outline: none; }
+    textarea { min-height: 200px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; line-height: 1.6; }
+    .help-text { font-size: 12px; color: #666; margin-top: 6px; }
+    .btn-group { display: flex; gap: 10px; align-items: center; }
+    .btn-secondary { background-color: #666; }
+    .btn-secondary:hover { background-color: #888; }
+    .btn-danger { background-color: #dc3545; }
+    .btn-danger:hover { background-color: #c82333; }
+    button { background-color: #000; color: #fff; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
+    button:hover { background-color: #333; }
+    #status { margin-top: 15px; color: #28a745; font-size: 14px; font-weight: 500; display: none; margin-bottom: 15px; }
+    
+    .prompts-layout { display: flex; gap: 20px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 30px; }
+    .prompts-sidebar { width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+    .prompt-item { padding: 10px 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+    .prompt-item:hover { background: #e9ecef; }
+    .prompt-item.active { background: #e3f2fd; border-color: #007bff; color: #0056b3; font-weight: 500; }
+    .prompt-item-name { flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .prompt-editor { flex-grow: 1; }
+    #addPromptBtn { width: 100%; border: 1px dashed #999; background: transparent; color: #333; }
+    #addPromptBtn:hover { border-color: #000; background: #f8f9fa; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ImageToPrompt 模型配置</h1>
+    <div id="status">设置已保存！</div>
+    
+    <div class="form-group">
+      <label for="apiUrl">API 接口地址 (API URL)</label>
+      <input type="text" id="apiUrl" placeholder="例如: https://api.moonshot.cn">
+      <div class="help-text">支持官方接口或兼容 OpenAI 格式的反代接口。只需填写域名即可（如 https://api.moonshot.cn），系统会自动补全路径。</div>
+    </div>
+
+    <div class="form-group">
+      <label for="apiKey">API 密钥 (API Key)</label>
+      <input type="password" id="apiKey" placeholder="sk-...">
+      <div class="help-text">你的 API Key，安全存储在浏览器本地。</div>
+    </div>
+
+    <div class="form-group">
+      <label for="modelName">全局模型名称 (Model Name)</label>
+      <input type="text" id="modelName" placeholder="例如: moonshot-v1-32k-vision">
+      <div class="help-text">推荐使用 OpenAI 的 `gpt-5.4-mini` 或 Kimi 的 `moonshot-v1-32k-vision`，需支持视觉输入。</div>
+    </div>
+    
+    <div class="btn-group">
+      <button id="saveGlobalBtn">保存全局设置</button>
+    </div>
+
+    <div class="prompts-layout">
+      <div class="prompts-sidebar">
+        <label>多提示词管理 (右键菜单)</label>
+        <div id="promptList"></div>
+        <button id="addPromptBtn" class="btn-secondary">+ 添加新提示词</button>
+      </div>
+
+      <div class="prompt-editor" id="promptEditor" style="display: none;">
+        <div class="form-group">
+          <label for="promptName">提示词名称 (必填，用于右键菜单显示)</label>
+          <input type="text" id="promptName" placeholder="例如: 提取绘画词">
+        </div>
+        <div class="form-group">
+          <label for="promptText">自定义提示词 (System Prompt)</label>
+          <textarea id="promptText" placeholder="在这里编辑发给大模型的提示词..."></textarea>
+          <div class="help-text">此提示词决定了大模型如何分析图片并返回结果。通常要求大模型返回 JSON 以便界面解析。</div>
+        </div>
+        <div class="btn-group">
+          <button id="savePromptBtn">保存提示词</button>
+          <button id="deletePromptBtn" class="btn-danger">删除当前</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>
