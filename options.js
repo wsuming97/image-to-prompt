@@ -123,6 +123,16 @@ function restoreOptions() {
     if (items.prompts && items.prompts.length > 0) {
       // 已有新版数据
       currentPrompts = items.prompts;
+      // 自动补全：如果 DEFAULT_PROMPTS 中有新增的预设（按 id 判断），追加到末尾
+      var existingIds = {};
+      for (var k = 0; k < currentPrompts.length; k++) {
+        existingIds[currentPrompts[k].id] = true;
+      }
+      for (var k = 0; k < DEFAULT_PROMPTS.length; k++) {
+        if (!existingIds[DEFAULT_PROMPTS[k].id]) {
+          currentPrompts.push(JSON.parse(JSON.stringify(DEFAULT_PROMPTS[k])));
+        }
+      }
     } else if (items.promptText && items.promptText.length > 0) {
       // 旧版有自定义提示词 → 迁移 + 追加默认模板
       currentPrompts = [{
