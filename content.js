@@ -384,6 +384,49 @@ function showOverlay(imgUrl) {
   });
 }
 
+/**
+ * 将 description 中的【】分区标记渲染为结构化 HTML
+ * 如果没有【】标记，返回纯文本（向后兼容）
+ */
+function formatDescription(text) {
+  if (!text) return { html: '', isStructured: false };
+  // 检测是否包含【】分区标记
+  const sectionPattern = /【([^】]+)】/g;
+  if (!sectionPattern.test(text)) {
+    // 纯文本模式：转义 HTML 并保留换行
+    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return { html: escaped.replace(/\n/g, '<br>'), isStructured: false };
+  }
+  // 结构化模式：按【】拆分为分区
+  const sections = [];
+  const lines = text.split('\n');
+  let currentSection = null;
+  for (const line of lines) {
+    const match = line.match(/^【([^】]+)】(.*)/);
+    if (match) {
+      if (currentSection) sections.push(currentSection);
+      currentSection = { title: match[1], content: match[2].trim() };
+    } else if (currentSection) {
+      // 追加内容到当前分区
+      if (line.trim()) {
+        currentSection.content += (currentSection.content ? '\n' : '') + line.trim();
+      }
+    }
+  }
+  if (currentSection) sections.push(currentSection);
+  // 生成 HTML
+  const html = sections.map(s => {
+    const contentEscaped = s.content
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>');
+    return `<div class="i2p-section">
+      <div class="i2p-section-title">` + s.title + `</div>
+      <div class="i2p-section-content">` + contentEscaped + `</div>
+    </div>`;
+  }).join('');
+  return { html, isStructured: true };
+}
+
 function renderResult(container, data) {
   const { title, ratio, description, tags, prompt_en } = data;
   
@@ -393,7 +436,7 @@ function renderResult(container, data) {
     <div class="i2p-header-label">IMAGETOPROMPT</div>
     <h2 class="i2p-title">${title || '无标题'}</h2>
     <div class="i2p-ratio">比例 ${ratio || '未知'}</div>
-    <div class="i2p-desc" id="i2p-desc-area">${description || ''}</div>
+    <div class="i2p-desc" id="i2p-desc-area">${formatDescription(description).html}</div>
     
     <div class="i2p-json-container" id="i2p-json-area" style="display:none;"></div>
     
@@ -457,7 +500,12 @@ function renderResult(container, data) {
       currentLang = target.getAttribute('data-lang');
       const content = langContents[currentLang];
 
-      descArea.textContent = content.desc;
+      // 结构化渲染：中文模式用 formatDescription 解析【】标记
+      if (currentLang === 'zh') {
+        descArea.innerHTML = formatDescription(content.desc).html;
+      } else {
+        descArea.textContent = content.desc;
+      }
       jsonArea.innerHTML = content.json ? content.json.replace(/ /g, '&nbsp;').replace(/\n/g, '<br>') : '';
       jsonArea.style.display = content.json ? 'block' : 'none';
       tagsArea.innerHTML = content.tags;

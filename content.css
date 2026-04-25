@@ -159,6 +159,31 @@
 @keyframes i2p-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .i2p-loading-text { font-size: 14px; color: rgba(255,255,255,0.7); letter-spacing: 1px; }
 
+/* 结构化分区样式 — 用于【】标记的分块渲染 */
+.i2p-section {
+  background: rgba(255,255,255,0.06);
+  border-left: 3px solid rgba(102,126,234,0.6);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  transition: background 0.2s;
+}
+.i2p-section:hover { background: rgba(255,255,255,0.1); }
+.i2p-section:last-child { margin-bottom: 0; }
+.i2p-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+.i2p-section-content {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.82);
+}
+
 /* 响应式 */
 @media (max-width: 768px) {
   .i2p-modal { flex-direction: column; }
